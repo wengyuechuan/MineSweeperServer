@@ -134,7 +134,8 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 				return o2.scores-o1.scores;//降序排列
 			}
 		});
-		for(int i=0;i<3;i++) {
+		int count = 3 < winlist.size()?3:winlist.size();
+		for(int i=0;i<count;i++) {
 			str+=(winlist.get(i).toString()+"#");//得到前三名的成绩 用#分割所有的返回的数值
 		}
 		reader.close();
@@ -164,26 +165,38 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 		}
 		public void run() {
 			while(canRun) {
+				
 				try {
-                    String msg = br.readLine();//接收客户端发来的消息
+					String msg = "";
+					try {
+						 msg = br.readLine();//接收客户端发来的消息
+					}catch(Exception e) {
+						System.out.println(Thread.currentThread().getName()+"客户端已经退出");
+						
+						//e.printStackTrace();
+						canRun = false;
+						break;
+					}
                     String[] strs = msg.split("#");
                     if(strs[0].equals("LOGIN")){//收到来自客户端的上线消息
                         this.username = strs[1]; //获取用户名
                         userMsg.clear();//清空表项，然后从文件中重新获取
                         readFromFile();//从文件中读入重新更新表
                         String pwd=userMsg.get(this.username);//得到用户名对应的密码
-                        if(pwd.equals(strs[2])) {//如果得到的密码也与其相同，则现在允许登录
+                        if(pwd!=null && pwd.equals(strs[2])) {//如果得到的密码也与其相同，则现在允许登录
                             nowusername.addElement(username);
                             userList.repaint();
                             sendMessage("ACCEPTLOGIN#",this);
+                            Thread.currentThread().setName(username);
                         }else {
                         	sendMessage("REFUSELOGIN#",this);//拒绝登录
                         }
                     }else if(strs[0].equals("REGISTER")){ //如果是注册
-                        ArrayList<String> usem=(ArrayList<String>) userMsg.keySet();
                         String newuname=strs[1];//获取注册的用户名
-                        if(usem.contains(newuname)) {
-                        	sendMessage("REFUSEREGISTER#",this);
+                        if(userMsg.keySet().contains(newuname)) {//用户名已存在
+                        	sendMessage("REFUSEREGISTER#用户名已存在",this);
+                        }else if(strs[2].equals(strs[3]) == false){//两次密码不相同
+                        	sendMessage("REFUSEREGISTER#两次密码不相同",this);
                         }else {
                         	userMsg.put(newuname, strs[3]);//把密码也添加进去
                         	writeToFile();//重新写回文件
@@ -200,7 +213,15 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
                     	String temp="GETWINRESULT#";
                     	getWin(temp);
                     	sendMessage(temp,this);
+                    }else if(strs[0].equals("OFFLINE")) {
+                    	String echo = "OFFLINE#";
+                    	sendMessage(echo,this);//把OFFLINE请求发送回客户端，让客户端退出
+                    	if(strs.length > 1)
+                    		nowusername.removeElement(strs[1]);//删除客户端
+                    	userList.repaint();
+                    	canRun = false;
                     }
+                    
 				}catch(Exception ex) {
 					ex.printStackTrace();
 				}

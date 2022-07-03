@@ -7,6 +7,9 @@ public class winListStruct {
 	public int scores;//得分
 	@Override
 	public String toString() {
-		return ""+username+" "+ip+" "+time+" "+scores; //重写该方法方便写入
+		return ""+username+"#"+ip+"#"+time+"#"+scores; //重写该方法方便写入
+	}
+	public String ToString() {
+		return ""+username+" "+ip+" "+time+" "+scores;
 	}
 }

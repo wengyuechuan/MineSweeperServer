@@ -114,7 +114,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 		writer.close();//关闭文件输出流
 	}
 	
-	public void getWin(String str) throws IOException{ //得到排行榜中的前三名 可以将这里的结构改成一个类对象进行书写
+	public String getWin(String str) throws IOException{ //得到排行榜中的前三名 可以将这里的结构改成一个类对象进行书写
 		File file=new File("./userMsg/winList.txt");
 		BufferedReader reader=new BufferedReader(new FileReader(file));//打开文件
 		String temp=null;
@@ -139,6 +139,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 			str+=(winlist.get(i).toString()+"#");//得到前三名的成绩 用#分割所有的返回的数值
 		}
 		reader.close();
+		return str;
 	}
 	
 	public void putWin(winListStruct nowu) throws IOException{ //写入排行榜 未实现？ 还没有想好如何设计数据结构
@@ -147,7 +148,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 		String content="";
 		winlist.add(nowu);
 		for(winListStruct wls:winlist) {
-			content+=wls.toString();
+			content+=wls.ToString(); //自己写的函数，专门用于描述这个形式
 			content+="\n";//加入一行空行
 		}
 	}
@@ -172,8 +173,6 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 						 msg = br.readLine();//接收客户端发来的消息
 					}catch(Exception e) {
 						System.out.println(Thread.currentThread().getName()+"客户端已经退出");
-						
-						//e.printStackTrace();
 						canRun = false;
 						break;
 					}
@@ -211,15 +210,15 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
                     	putWin(t);       	
                     }else if(strs[0].equals("GETWIN")) {//收到客户端请求排行榜
                     	String temp="GETWINRESULT#";
-                    	getWin(temp);
+                    	temp=getWin(temp);
                     	sendMessage(temp,this);
                     }else if(strs[0].equals("OFFLINE")) {
                     	String echo = "OFFLINE#";
                     	sendMessage(echo,this);//把OFFLINE请求发送回客户端，让客户端退出
                     	if(strs.length > 1)
                     		nowusername.removeElement(strs[1]);//删除客户端
-                    	userList.repaint();
-                    	canRun = false;
+                    		userList.repaint();
+                    		canRun = false;
                     }
                     
 				}catch(Exception ex) {

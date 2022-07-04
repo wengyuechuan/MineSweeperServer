@@ -151,6 +151,8 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 			content+=wls.ToString(); //自己写的函数，专门用于描述这个形式
 			content+="\n";//加入一行空行
 		}
+		writer.write(content);
+		writer.flush();
 	}
 	
 	public class gameThread extends Thread{ //游戏线程，用于容纳多用户，用于信息传输

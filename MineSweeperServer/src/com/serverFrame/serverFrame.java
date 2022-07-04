@@ -157,7 +157,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 	
 	public class gameThread extends Thread{ //游戏线程，用于容纳多用户，用于信息传输
 		Socket s=null;
-		public boolean canRun=true;
+		
 		private BufferedReader br=null;//读入缓冲区
 		private PrintStream ps=null;//输出缓冲区
 		private String username=null; //用户名
@@ -167,7 +167,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 			ps=new PrintStream(s.getOutputStream());//得到输出
 		}
 		public void run() {
-			while(canRun) {
+			while(true) {
 				
 				try {
 					String msg = "";
@@ -175,7 +175,6 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 						 msg = br.readLine();//接收客户端发来的消息
 					}catch(Exception e) {
 						System.out.println(Thread.currentThread().getName()+"客户端已经退出");
-						canRun = false;
 						break;
 					}
                     String[] strs = msg.split("#");
@@ -215,12 +214,12 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
                     	temp=getWin(temp);
                     	sendMessage(temp,this);
                     }else if(strs[0].equals("OFFLINE")) {
-                    	String echo = "OFFLINE#";
+                    	String echo = msg;//将收到的信息发送回客户端
                     	sendMessage(echo,this);//把OFFLINE请求发送回客户端，让客户端退出
                     	if(strs.length > 1)
                     		nowusername.removeElement(strs[1]);//删除客户端
-                    		userList.repaint();
-                    		canRun = false;
+                		userList.repaint();
+                		
                     }
                     
 				}catch(Exception ex) {
@@ -232,7 +231,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
     public void handleExpel() throws IOException {
     	for(gameThread t:users) {
     		if(userList.getSelectedValuesList().get(0).equals(t.username)) {
-                sendMessage("OFFLINE#" + userList.getSelectedValuesList().get(0),t); //向当前线程发送
+                sendMessage("OFFLINE#" + userList.getSelectedValuesList().get(0)+ "#" +"KICK",t); //向当前线程发送
     		}
     	}
         nowusername.removeElement(userList.getSelectedValuesList().get(0));//更新defaultModel

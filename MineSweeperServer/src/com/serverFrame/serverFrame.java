@@ -118,6 +118,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 		File file=new File("./userMsg/winList.txt");
 		BufferedReader reader=new BufferedReader(new FileReader(file));//打开文件
 		String temp=null;
+		winlist.clear();//先清空所有的值
 		while((temp=reader.readLine())!=null) { //读入
 			String[] temp2=temp.split(" ");
 			winListStruct temp3 = new winListStruct();
@@ -142,10 +143,23 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 		return str;
 	}
 	
-	public void putWin(winListStruct nowu) throws IOException{ //写入排行榜 未实现？ 还没有想好如何设计数据结构
+	public void putWin(winListStruct nowu) throws IOException{ 
 		File file=new File("./userMsg/winList.txt");
-		BufferedWriter writer=new BufferedWriter(new FileWriter(file));//打开文件
+		BufferedReader reader=new BufferedReader(new FileReader(file));//打开文件输入流，先重新写入ArrayList
+		winlist.clear();//清空这里的数值
+		String temp=null;
+		while((temp=reader.readLine())!=null) { 
+			String[] temp2=temp.split(" ");
+			winListStruct temp3 = new winListStruct();
+			temp3.username=temp2[0];
+			temp3.ip=temp2[1];
+			temp3.time=temp2[2];
+			temp3.scores=Integer.parseInt(temp2[3]);
+			winlist.add(temp3);
+		}
+		reader.close();
 		String content="";
+		BufferedWriter writer=new BufferedWriter(new FileWriter(file));//打开文件
 		winlist.add(nowu);
 		for(winListStruct wls:winlist) {
 			content+=wls.ToString(); //自己写的函数，专门用于描述这个形式

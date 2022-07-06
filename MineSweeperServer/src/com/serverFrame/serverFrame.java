@@ -2,38 +2,44 @@ package com.serverFrame;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Set;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.Reader;
-import javax.swing.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 /**
  * 服务器端
  */
 import com.winListStruct.winListStruct;
 public class serverFrame extends JFrame implements Runnable, ListSelectionListener, ActionListener{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7927620805824794276L;
 	private Socket s=null;
 	private ServerSocket ss=null;
     private ArrayList<gameThread> users = new ArrayList<gameThread>(); //容量能够动态增长的数组 存储这些用户线程
 	private HashMap<String,String> userMsg=new HashMap<>(); //用于存储用户账号和密码的对应关系
 	DefaultListModel<String> nowusername = new DefaultListModel<String>(); //用于存储当前用户的名称
-	private JList<String> userList=new JList(nowusername);//显示对象列表，并且允许用户选择一个或者多个项的组件
+	private JList<String> userList=new JList<>(nowusername);//显示对象列表，并且允许用户选择一个或者多个项的组件
 	private ArrayList<winListStruct> winlist=new ArrayList<>();//新的结构替
 	private JButton jbt=new JButton("踢出服务器");
 	public serverFrame() throws Exception{
@@ -75,7 +81,6 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 				s=ss.accept();
 				gameThread ct=new gameThread(s);
 				users.add(ct);//将线程加入到其中
-				ListModel<String> model=userList.getModel();//获取JList的数据内容
 				ct.start();//开启线程
 			}catch(Exception ex) {
 				ex.printStackTrace();
@@ -159,14 +164,15 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 		}
 		reader.close();
 		String content="";
-		BufferedWriter writer=new BufferedWriter(new FileWriter(file));//打开文件
-		winlist.add(nowu);
-		for(winListStruct wls:winlist) {
-			content+=wls.ToString(); //自己写的函数，专门用于描述这个形式
-			content+="\n";//加入一行空行
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+			winlist.add(nowu);
+			for(winListStruct wls:winlist) {
+				content+=wls.ToString(); //自己写的函数，专门用于描述这个形式
+				content+="\n";//加入一行空行
+			}
+			writer.write(content);
+			writer.flush();
 		}
-		writer.write(content);
-		writer.flush();
 	}
 	
 	public class gameThread extends Thread{ //游戏线程，用于容纳多用户，用于信息传输

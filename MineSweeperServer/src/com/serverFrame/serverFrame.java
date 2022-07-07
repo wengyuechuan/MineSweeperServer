@@ -54,7 +54,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) { //踢出服务器的设计
-		// TODO Auto-generated method stub
+		
 		String label=e.getActionCommand();
 		if(label.equals("踢出服务器")) {
 			try {
@@ -67,7 +67,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 	
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

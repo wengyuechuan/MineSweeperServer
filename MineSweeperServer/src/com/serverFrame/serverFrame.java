@@ -30,9 +30,6 @@ import javax.swing.event.ListSelectionListener;
  */
 import com.winListStruct.winListStruct;
 public class serverFrame extends JFrame implements Runnable, ListSelectionListener, ActionListener{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7927620805824794276L;
 	private Socket s=null;
 	private ServerSocket ss=null;

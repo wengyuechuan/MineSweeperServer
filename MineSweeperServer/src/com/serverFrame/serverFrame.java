@@ -89,6 +89,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 	}
 	
 	public void readFromFile() throws IOException { //从文件中读入数据
+		userMsg.clear();//清空之后重新读入
 		File file=new File("./userMsg/user.txt"); //打开文件
         BufferedReader reader = null;
 		try {
@@ -105,7 +106,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
 	}
 	
 	public void writeToFile() throws IOException{ //向文件中写入数据
-		File file=new File("./userMsg/user.txt");//打开文件
+		File file=new File("./userMsg/user.txt");//打开文件       
 		BufferedWriter writer=null;
 		writer=new BufferedWriter(new FileWriter(file));//打开文件字符输出流
 		for(String k:userMsg.keySet()) {
@@ -210,6 +211,7 @@ public class serverFrame extends JFrame implements Runnable, ListSelectionListen
                         }
                     }else if(strs[0].equals("REGISTER")){ //如果是注册
                         String newuname=strs[1];//获取注册的用户名
+                        readFromFile();
                         if(userMsg.keySet().contains(newuname)) {//用户名已存在
                         	sendMessage("REFUSEREGISTER#用户名已存在",this);
                         }else if(strs[2].equals(strs[3]) == false){//两次密码不相同
